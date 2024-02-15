@@ -9,6 +9,7 @@ import 'package:sign_ai/websocket.dart';
 
 void main() => runApp(const MaterialApp(
   home: VideoStream(),
+  title: "SignBridge",
 ));
 
 class VideoStream extends StatefulWidget {
@@ -39,7 +40,7 @@ class _VideoStreamState extends State<VideoStream> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Live Video"),
+        title: const Text("Detect Sign"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -63,6 +64,7 @@ class _VideoStreamState extends State<VideoStream> {
               ),
               const SizedBox(
                 height: 50.0,
+                width: 100.0,
               ),
               _isConnected
                   ? StreamBuilder(
