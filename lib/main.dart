@@ -8,9 +8,9 @@ import 'package:sign_ai/websocket.dart';
 // import 'package:sign_ai/styles.dart';
 
 void main() => runApp(const MaterialApp(
-  home: VideoStream(),
-  title: "SignBridge",
-));
+      home: VideoStream(),
+      title: "SignBridge",
+    ));
 
 class VideoStream extends StatefulWidget {
   const VideoStream({Key? key}) : super(key: key);
@@ -55,43 +55,54 @@ class _VideoStreamState extends State<VideoStream> {
                     // style: buttonStyle,
                     child: const Text("Connect"),
                   ),
-                   ElevatedButton(
+                  ElevatedButton(
                     onPressed: disconnect,
                     // style: buttonStyle,
                     child: const Text("Disconnect"),
                   ),
                 ],
               ),
-              const SizedBox(
-                height: 50.0,
-                width: 100.0,
-              ),
-              _isConnected
-                  ? StreamBuilder(
-                      stream: _socket.stream,
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData) {
-                          return const CircularProgressIndicator();
-                        }
+              ElevatedButton(onPressed: (){}, child: Text("Swap")),
+              Row(
+                children: [
+                  const SizedBox(
+                    height: 50.0,
+                    width: 100.0,
+                  ),
+                  _isConnected
+                      ? StreamBuilder(
+                          stream: _socket.stream,
+                          builder: (context, snapshot) {
+                            if (!snapshot.hasData) {
+                              print('Progrossing');
+                              return const CircularProgressIndicator();
+                            }
+                            else{
+                              print('No data');
+                            }
 
-                        if (snapshot.connectionState == ConnectionState.done) {
-                          return const Center(
-                            child: Text("Connection Closed !"),
-                          );
-                        }
-                        //? Working for single frames
-                        return Image.memory(
-                          Uint8List.fromList(
-                            base64Decode(
-                              (snapshot.data.toString()),
-                            ),
-                          ),
-                          gaplessPlayback: true,
-                          excludeFromSemantics: true,
-                        );
-                      },
-                    )
-                  : const Text("Initiate Connection")
+                            if (snapshot.connectionState ==
+                                ConnectionState.done) {
+                              return const Center(
+                                child: Text("Connection Closed !"),
+                              );
+                            }
+                            //? Working for single frames
+                            return Image.memory(
+                              Uint8List.fromList(
+                                base64Decode(
+                                  (snapshot.data.toString()),
+                                ),
+                              ),
+                              gaplessPlayback: true,
+                              excludeFromSemantics: true,
+                            );
+                          },
+                        )
+                      : const Text("Initiate Connection")
+                      ,Text('Data from server')
+                ],
+              ),
             ],
           ),
         ),
