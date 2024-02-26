@@ -7,16 +7,23 @@ import 'package:flutter/material.dart';
 import 'package:sign_ai/websocket.dart';
 // import 'package:sign_ai/styles.dart';
 
-class VideoStream extends StatefulWidget {
-  const VideoStream({Key? key}) : super(key: key);
+void main() => runApp(const MaterialApp(
+      home: SignTranslate(),
+      title: "SignBridge",
+    ));
+
+class SignTranslate extends StatefulWidget {
+  const SignTranslate({Key? key}) : super(key: key);
 
   @override
-  State<VideoStream> createState() => _VideoStreamState();
+  State<SignTranslate> createState() => _SignTranslateState();
 }
 
-class _VideoStreamState extends State<VideoStream> {
-  final WebSocket _socket = WebSocket("ws://<your_network_ip>:<port>");
+class _SignTranslateState extends State<SignTranslate> {
+  final WebSocket _socket = WebSocket("ws://localhost:5000");
   bool _isConnected = false;
+  bool signToText = true; // Add this line to declare the signToText flag
+
   void connect(BuildContext context) async {
     _socket.connect();
     setState(() {
@@ -31,11 +38,20 @@ class _VideoStreamState extends State<VideoStream> {
     });
   }
 
+  void swapMode() {
+    setState(() {
+      signToText =
+          !signToText; // Toggle the signToText flag when the button is pressed
+    });
+    _socket.send(
+        'signToText: $signToText'); // Send the new flag value to the server
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Live Video"),
+        title: const Text("Translate Sign"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -57,35 +73,51 @@ class _VideoStreamState extends State<VideoStream> {
                   ),
                 ],
               ),
-              const SizedBox(
-                height: 50.0,
+              ElevatedButton(
+                onPressed: swapMode,
+                child: const Text("Swap"),
               ),
-              _isConnected
-                  ? StreamBuilder(
-                      stream: _socket.stream,
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData) {
-                          return const CircularProgressIndicator();
-                        }
+              Row(
+                children: [
+                  const SizedBox(
+                    height: 50.0,
+                    width: 50.0,
+                  ),
+                  _isConnected
+                      ? StreamBuilder(
+                          stream: _socket.stream,
+                          builder: (context, snapshot) {
+                            if (!snapshot.hasData) {
+                              print('Progrossing');
+                              return const CircularProgressIndicator();
+                            } else {
+                              print('No data');
+                            }
 
-                        if (snapshot.connectionState == ConnectionState.done) {
-                          return const Center(
-                            child: Text("Connection Closed !"),
-                          );
-                        }
-                        //? Working for single frames
-                        return Image.memory(
-                          Uint8List.fromList(
-                            base64Decode(
-                              (snapshot.data.toString()),
-                            ),
-                          ),
-                          gaplessPlayback: true,
-                          excludeFromSemantics: true,
-                        );
-                      },
-                    )
-                  : const Text("Initiate Connection")
+                            if (snapshot.connectionState ==
+                                ConnectionState.done) {
+                              return const Center(
+                                child: Text("Connection Closed !"),
+                              );
+                            }
+                            //? Working for single frames
+                            var data = base64Decode(snapshot.data.toString());
+                            var image = Image.memory(
+                              Uint8List.fromList(data),
+                              gaplessPlayback: true,
+                              excludeFromSemantics: true,
+                            );
+                            var text = Text('Data from server');
+
+                            // Display the image and text based on the signToText flag
+                            return signToText
+                                ? Row(children: [image, text])
+                                : Row(children: [text, image]);
+                          },
+                        )
+                      : const Text("Initiate Connection"),
+                ],
+              ),
             ],
           ),
         ),

@@ -8,18 +8,18 @@ import 'package:sign_ai/websocket.dart';
 // import 'package:sign_ai/styles.dart';
 
 void main() => runApp(const MaterialApp(
-      home: VideoStream(),
+      home: SignTranslate(),
       title: "SignBridge",
     ));
 
-class VideoStream extends StatefulWidget {
-  const VideoStream({Key? key}) : super(key: key);
+class SignTranslate extends StatefulWidget {
+  const SignTranslate({Key? key}) : super(key: key);
 
   @override
-  State<VideoStream> createState() => _VideoStreamState();
+  State<SignTranslate> createState() => _SignTranslateState();
 }
 
-class _VideoStreamState extends State<VideoStream> {
+class _SignTranslateState extends State<SignTranslate> {
   final WebSocket _socket = WebSocket("ws://localhost:5000");
   bool _isConnected = false;
   void connect(BuildContext context) async {
@@ -40,7 +40,7 @@ class _VideoStreamState extends State<VideoStream> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Detect Sign"),
+        title: const Text("Translate Sign"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -110,81 +110,3 @@ class _VideoStreamState extends State<VideoStream> {
     );
   }
 }
-
-
-// import 'package:flutter/material.dart';
-
-// void main() {
-//   runApp(MyApp());
-// }
-
-// class MyApp extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       title: 'SignBridge',
-//       theme: ThemeData(
-//         primarySwatch: Colors.blue,
-//       ),
-//       home: MyHomePage(title: 'SignBridge Home Page'),
-//     );
-//   }
-// }
-
-// class MyHomePage extends StatefulWidget {
-//   MyHomePage({Key? key, this.title}) : super(key: key);
-
-//   final String? title;
-
-//   @override
-//   _MyHomePageState createState() => _MyHomePageState();
-// }
-
-// class _MyHomePageState extends State<MyHomePage> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text(widget.title!),
-//       ),
-//       body: Center(
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: <Widget>[
-//             Expanded(
-//               child: Container(
-//                 color: Colors.grey,
-//                 child: const Center(child: Text('Video')),
-//               ),
-//             ),
-//             Expanded(
-//               child: Container(
-//                 color: Colors.purple,
-//                 child: const Center(child: Text('Text')),
-//               ),
-//             ),
-//             Row(
-//               mainAxisAlignment: MainAxisAlignment.center,
-//               children: <Widget>[
-//                 ElevatedButton(
-//                   onPressed: () {},
-//                   style: ElevatedButton.styleFrom(
-//                     backgroundColor: Colors.green,
-//                   ),
-//                   child: const Text('Start'),
-//                 ),
-//                 ElevatedButton(
-//                   onPressed: () {},
-//                   style: ElevatedButton.styleFrom(
-//                     backgroundColor: Colors.red,
-//                   ),
-//                   child: const Text('Stop'),
-//                 ),
-//               ],
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }

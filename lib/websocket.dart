@@ -42,4 +42,8 @@ class WebSocket {
       _channel!.sink.close(status.normalClosure);
     }
   }
+
+  void send(data) async {
+    _channel!.sink.add(data);
+  }
 }
