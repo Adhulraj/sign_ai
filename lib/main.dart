@@ -62,12 +62,12 @@ class _VideoStreamState extends State<VideoStream> {
                   ),
                 ],
               ),
-              ElevatedButton(onPressed: (){}, child: Text("Swap")),
+              ElevatedButton(onPressed: (){}, child: const Text("Swap")),
               Row(
                 children: [
                   const SizedBox(
                     height: 50.0,
-                    width: 100.0,
+                    width: 50.0,
                   ),
                   _isConnected
                       ? StreamBuilder(
@@ -100,7 +100,7 @@ class _VideoStreamState extends State<VideoStream> {
                           },
                         )
                       : const Text("Initiate Connection")
-                      ,Text('Data from server')
+                      ,const Text('Data from server')
                 ],
               ),
             ],

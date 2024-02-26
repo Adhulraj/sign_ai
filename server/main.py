@@ -1,19 +1,18 @@
-from scipy import stats
+# from scipy import stats
 import cv2
 import numpy as np
 import os
-from matplotlib import pyplot as plt
+# from matplotlib import pyplot as plt
 import time
 import mediapipe as mp
 
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
-from tensorflow.keras.callbacks import TensorBoard
+# from tensorflow.keras.callbacks import TensorBoard
 import websockets
 import asyncio
-
 import base64
-from scipy import stats
+# from scipy import stats
 
 mp_holistic = mp.solutions.holistic  # Holistic model
 mp_drawing = mp.solutions.drawing_utils  # Drawing utilities
