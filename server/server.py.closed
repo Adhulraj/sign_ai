@@ -165,6 +165,10 @@ print("Connected by", addr)
 asyncio.get_event_loop().run_until_complete(transmit(client_socket))
 asyncio.get_event_loop().run_forever()
 
+
+async def recieve(client_socket):
+    received_data = client_socket.recv(1024).decode()
+
 # while True:
 #     # Capture video frame
 #     ret, frame = cap.read()
