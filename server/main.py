@@ -120,7 +120,7 @@ print("Started server on port : ", port)
 
 
 
-async def transmit(websocket, path):
+async def server(websocket, path):
     print("Client Connected !")
     try:
         sequence = []
@@ -128,6 +128,8 @@ async def transmit(websocket, path):
         predictions = []
         threshold = 0.5
         cap = cv2.VideoCapture(0)
+
+        print('Function Called')
 
         with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
             while cap.isOpened():
@@ -176,24 +178,26 @@ async def transmit(websocket, path):
                 encoded = cv2.imencode('.jpg', image)[1]
 
                 data = str(base64.b64encode(encoded))
+                # data = f"{data[2:len(data)-1]}|{sentence}"
                 data = data[2:len(data)-1]
                 print("data sent")
                 await websocket.send(data)
+            
 
             # cv2.imshow("Transimission", frame)
 
             # if cv2.waitKey(1) & 0xFF == ord('q'):
             #     break
             cap.release()
-    #except websockets.connection.ConnectionClosed as e:
-        #print("Client Disconnected !")
-        #cap.release()
+    except websockets.connection.ConnectionClosed:
+        print("Client Disconnected !")
+        cap.release()
     finally:
         pass
     # except:
     #     print("Someting went Wrong !")
 
-start_server = websockets.serve(transmit, port=port)
+start_server = websockets.serve(server, port=port)
 
 asyncio.get_event_loop().run_until_complete(start_server)
 asyncio.get_event_loop().run_forever()
