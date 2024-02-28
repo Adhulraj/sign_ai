@@ -20,7 +20,7 @@ mp_drawing = mp.solutions.drawing_utils  # Drawing utilities
 
 # Path for exported data, numpy arrays
 DATA_PATH = os.path.join('MP_Data')
-
+port = 5001
 
 # Actions that we try to detect
 actions = np.array(['hello','hai','iloveyou'])
@@ -102,21 +102,21 @@ model.add(Dense(actions.shape[0], activation='softmax'))
 
 model.load_weights('action.h5')
 
-colors = [(245, 117, 16), (117, 245, 16), (16, 117, 245)]
+# colors = [(245, 117, 16), (117, 245, 16), (16, 117, 245)]
 
 
-def prob_viz(res, actions, input_frame, colors):
-    output_frame = input_frame.copy()
-    for num, prob in enumerate(res):
-        cv2.rectangle(output_frame, (0, 60+num*40),
-                      (int(prob*100), 90+num*40), colors[num], -1)
-        cv2.putText(output_frame, actions[num], (0, 85+num*40),
-                    cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+# def prob_viz(res, actions, input_frame, colors):
+#     output_frame = input_frame.copy()
+#     for num, prob in enumerate(res):
+#         cv2.rectangle(output_frame, (0, 60+num*40),
+#                       (int(prob*100), 90+num*40), colors[num], -1)
+#         cv2.putText(output_frame, actions[num], (0, 85+num*40),
+#                     cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
 
-    return output_frame
+#     return output_frame
 
-port = 5000
-print("Started server on port : ", port)
+
+
 
 
 
@@ -168,18 +168,18 @@ async def server(websocket, path):
                         sentence = sentence[-5:]
 
                     # Viz probabilities
-                    image = prob_viz(res, actions, image, colors)
+                    # image = prob_viz(res, actions, image, colors)
 
-                cv2.rectangle(image, (0, 0), (640, 40), (245, 117, 16), -1)
-                cv2.putText(image, ' '.join(sentence), (3, 30),
-                            cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+                # cv2.rectangle(image, (0, 0), (640, 40), (245, 117, 16), -1)
+                # cv2.putText(image, ' '.join(sentence), (3, 30),
+                #             cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
 
 
                 encoded = cv2.imencode('.jpg', image)[1]
 
                 data = str(base64.b64encode(encoded))
-                # data = f"{data[2:len(data)-1]}|{sentence}"
-                data = data[2:len(data)-1]
+                data = f"{data[2:len(data)-1]}|{sentence}"
+                # data = data[2:len(data)-1]
                 print("data sent")
                 await websocket.send(data)
             
@@ -189,16 +189,17 @@ async def server(websocket, path):
             # if cv2.waitKey(1) & 0xFF == ord('q'):
             #     break
             cap.release()
-    except websockets.connection.ConnectionClosed:
+    except websockets.ConnectionClosed:
         print("Client Disconnected !")
         cap.release()
+        asyncio.get_event_loop().stop()
     finally:
         pass
-    # except:
+    # except:st
     #     print("Someting went Wrong !")
 
 start_server = websockets.serve(server, port=port)
-
+print("Started server on port : ", port)
 asyncio.get_event_loop().run_until_complete(start_server)
 asyncio.get_event_loop().run_forever()
 

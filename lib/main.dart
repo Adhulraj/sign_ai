@@ -24,7 +24,7 @@ class SignTranslate extends StatefulWidget {
 }
 
 class _SignTranslateState extends State<SignTranslate> {
-  final WebSocket _socket = WebSocket("ws://192.168.1.5:5000");
+  final WebSocket _socket = WebSocket("ws://localhost:5001");
   bool _isConnected = false;
   void connect(BuildContext context) async {
     _socket.connect();
@@ -44,15 +44,17 @@ class _SignTranslateState extends State<SignTranslate> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.white,
+        backgroundColor: const Color.fromARGB(255, 15, 30, 44),
+        foregroundColor: const Color.fromARGB(255, 72, 196, 228),
         title: const Text(
           "Sign Bridge",
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 40),
         ),
       ),
       body: Container(
-        decoration: const BoxDecoration(color: Colors.black),
+        decoration: const BoxDecoration(
+            color: Color.fromARGB(
+                255, 48, 110, 151)), //change to Color.fromARGB(255, 15, 30, 44)
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Center(
@@ -69,8 +71,8 @@ class _SignTranslateState extends State<SignTranslate> {
                     ),
                     ElevatedButton(
                       onPressed: () {},
-                      child: const Text("Swap"),
                       style: btnStyle,
+                      child: const Text("Swap"),
                     ),
                     ElevatedButton(
                       onPressed: disconnect,
@@ -84,9 +86,9 @@ class _SignTranslateState extends State<SignTranslate> {
                   children: [
                     _isConnected
                         ? Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: SizedBox(
-                              width: 250,
+                            padding: const EdgeInsets.all(8.0),
+                            child: SizedBox(
+                              // width: 250,
                               child: StreamBuilder(
                                 stream: _socket.stream,
                                 builder: (context, snapshot) {
@@ -96,7 +98,7 @@ class _SignTranslateState extends State<SignTranslate> {
                                   } else {
                                     print('No data');
                                   }
-                          
+
                                   if (snapshot.connectionState ==
                                       ConnectionState.done) {
                                     return const Center(
@@ -107,7 +109,7 @@ class _SignTranslateState extends State<SignTranslate> {
                                   return Image.memory(
                                     Uint8List.fromList(
                                       base64Decode(
-                                        (snapshot.data.toString()),
+                                        (getImage(snapshot)),
                                       ),
                                     ),
                                     gaplessPlayback: true,
@@ -116,9 +118,41 @@ class _SignTranslateState extends State<SignTranslate> {
                                 },
                               ),
                             ),
-                        )
-                        : const Text("Initiate Connection",style: TextStyle(color: Colors.white), ),
-                    const Text('Data from server',style: TextStyle(color: Colors.white))
+                          )
+                        : const Text(
+                            "Initiate Connection",
+                            style: TextStyle(color: Colors.white),
+                          ),
+
+                    _isConnected
+                        ? Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: SizedBox(
+                              width: 250,
+                              height: 250,
+                              child: StreamBuilder(
+                                stream: _socket.stream,
+                                builder: (context, snapshot) {
+                                  if (!snapshot.hasData) {
+                                    print('Progrossing');
+                                    return const CircularProgressIndicator();
+                                  } else {
+                                    print('No data');
+                                  }
+
+                                  //? Working for single frames
+                                  return TextField(
+                                    textAlign: TextAlign.start,
+                                    key: getText(snapshot),
+                                  );
+                                },
+                              ),
+                            ),
+                          )
+                        : const Text(
+                            " ",
+                          ),
+                    // const Text('Data from server',style: TextStyle(color: Colors.white))
                   ],
                 ),
               ],
@@ -128,4 +162,17 @@ class _SignTranslateState extends State<SignTranslate> {
       ),
     );
   }
+}
+
+getImage(AsyncSnapshot snapshot) {
+  var data = snapshot.data.toString();
+  final image = data.split("|")[0];
+  return image;
+}
+
+getText(AsyncSnapshot snapshot) {
+  var data = snapshot.data.toString();
+  final text = data.split("|")[1];
+  print(text);
+  return text;
 }

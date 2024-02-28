@@ -46,14 +46,4 @@ class WebSocket {
   void send(data) async {
     _channel!.sink.add(data);
   }
-
-
-
-  void getImage() {
-    
-  }
-
-  void getText(){
-
-  }
 }
