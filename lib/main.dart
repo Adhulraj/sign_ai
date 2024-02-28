@@ -54,7 +54,7 @@ class _SignTranslateState extends State<SignTranslate> {
       body: Container(
         decoration: const BoxDecoration(
             color: Color.fromARGB(
-                255, 48, 110, 151)), //change to Color.fromARGB(255, 15, 30, 44)
+                255, 15, 30, 44)), //change to Color.fromARGB(255, 15, 30, 44)
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Center(
@@ -94,7 +94,9 @@ class _SignTranslateState extends State<SignTranslate> {
                                 builder: (context, snapshot) {
                                   if (!snapshot.hasData) {
                                     print('Progrossing');
-                                    return const CircularProgressIndicator();
+                                    return const CircularProgressIndicator(
+                                      color: Colors.white,
+                                    );
                                   } else {
                                     print('No data');
                                   }
