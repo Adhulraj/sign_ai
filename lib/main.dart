@@ -57,34 +57,13 @@ class _SignTranslateState extends State<SignTranslate> {
                 255, 15, 30, 44)), //change to Color.fromARGB(255, 15, 30, 44)
         child: Padding(
           padding: const EdgeInsets.all(20.0),
-          child: Center(
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () => connect(context),
-                      // style: buttonStyle,
-                      style: btnStyle,
-                      child: const Text("Connect"),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {},
-                      style: btnStyle,
-                      child: const Text("Swap"),
-                    ),
-                    ElevatedButton(
-                      onPressed: disconnect,
-                      style: btnStyle,
-                      // style: buttonStyle,
-                      child: const Text("Disconnect"),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    _isConnected
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Center(
+                  child: Container(
+                    child: _isConnected
                         ? Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: SizedBox(
@@ -125,40 +104,72 @@ class _SignTranslateState extends State<SignTranslate> {
                             "Initiate Connection",
                             style: TextStyle(color: Colors.white),
                           ),
-
-                    _isConnected
-                        ? Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: SizedBox(
-                              width: 250,
-                              height: 250,
-                              child: StreamBuilder(
-                                stream: _socket.stream,
-                                builder: (context, snapshot) {
-                                  if (!snapshot.hasData) {
-                                    print('Progrossing');
-                                    return const CircularProgressIndicator();
-                                  } else {
-                                    print('No data');
-                                  }
-
-                                  //? Working for single frames
-                                  return TextField(
-                                    textAlign: TextAlign.start,
-                                    key: getText(snapshot),
-                                  );
-                                },
-                              ),
-                            ),
-                          )
-                        : const Text(
-                            " ",
-                          ),
-                    // const Text('Data from server',style: TextStyle(color: Colors.white))
-                  ],
+                  ),
                 ),
-              ],
-            ),
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ElevatedButton(
+                      onPressed: () => connect(context),
+                      // style: buttonStyle,
+                      style: btnStyle,
+                      child: const Text("Connect"),
+                    ),
+                  ),
+                  // Padding(
+                  //   padding: const EdgeInsets.all(8.0),
+                  //   child: ElevatedButton(
+                  //     onPressed: () {},
+                  //     style: btnStyle,
+                  //     child: const Text("Swap"),
+                  //   ),
+                  // ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ElevatedButton(
+                      onPressed: disconnect,
+                      style: btnStyle,
+                      // style: buttonStyle,
+                      child: const Text("Disconnect"),
+                    ),
+                  ),
+                ],
+              ),
+              Expanded(child:_isConnected
+                  ? Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: SizedBox(
+                        width: 250,
+                        height: 250,
+                        child: StreamBuilder(
+                          stream: _socket.stream,
+                          builder: (context, snapshot) {
+                            if (!snapshot.hasData) {
+                              print('Progrossing');
+                              return const CircularProgressIndicator();
+                            } else {
+                              print('No data');
+                            }
+
+                            //? Working for single frames
+                            return TextField(
+                              textAlign: TextAlign.start,
+                              key: getText(snapshot),
+                            );
+                          },
+                        ),
+                      ),
+                    )
+                  : const Text(
+                      "Waiting to connect",
+                      style: TextStyle(color: Colors.white),
+                    ),
+               )
+              // const Text('Data from server',style: TextStyle(color: Colors.white))
+            ],
           ),
         ),
       ),
