@@ -9,8 +9,8 @@ import 'package:sign_ai/websocket.dart';
 
 // import 'package:sign_ai/styles.dart';
 const btnStyle = ButtonStyle(
-    backgroundColor: MaterialStatePropertyAll<Color>(Colors.white),
-    foregroundColor: MaterialStatePropertyAll<Color>(Colors.black));
+    backgroundColor: MaterialStatePropertyAll<Color>(Color.fromARGB(255, 18, 214, 240)),
+    foregroundColor: MaterialStatePropertyAll<Color>(Color.fromARGB(255, 9, 11, 105)));
 void main() => runApp(const MaterialApp(
       home: SignTranslate(),
       title: "SignBridge",
