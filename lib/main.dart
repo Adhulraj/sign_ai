@@ -9,8 +9,10 @@ import 'package:sign_ai/websocket.dart';
 
 // import 'package:sign_ai/styles.dart';
 const btnStyle = ButtonStyle(
-    backgroundColor: MaterialStatePropertyAll<Color>(Color.fromARGB(255, 18, 214, 240)),
-    foregroundColor: MaterialStatePropertyAll<Color>(Color.fromARGB(255, 9, 11, 105)));
+    backgroundColor:
+        MaterialStatePropertyAll<Color>(Color.fromARGB(255, 18, 214, 240)),
+    foregroundColor:
+        MaterialStatePropertyAll<Color>(Color.fromARGB(255, 9, 11, 105)));
 void main() => runApp(const MaterialApp(
       home: SignTranslate(),
       title: "SignBridge",
@@ -69,11 +71,11 @@ class _SignTranslateState extends State<SignTranslate> {
                       style: btnStyle,
                       child: const Text("Connect"),
                     ),
-                    ElevatedButton(
-                      onPressed: () {},
-                      style: btnStyle,
-                      child: const Text("Swap"),
-                    ),
+                    // ElevatedButton(
+                    //   onPressed: () {},
+                    //   style: btnStyle,
+                    //   child: const Text("Swap"),
+                    // ),
                     ElevatedButton(
                       onPressed: disconnect,
                       style: btnStyle,
@@ -108,14 +110,26 @@ class _SignTranslateState extends State<SignTranslate> {
                                     );
                                   }
                                   //? Working for single frames
-                                  return Image.memory(
-                                    Uint8List.fromList(
-                                      base64Decode(
-                                        (getImage(snapshot)),
-                                      ),
+                                  return Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        SizedBox(
+                                          child: Image.memory(
+                                  Uint8List.fromList(
+                                    base64Decode(
+                                      (getImage(snapshot)),
                                     ),
-                                    gaplessPlayback: true,
-                                    excludeFromSemantics: true,
+                                  ),
+                                  gaplessPlayback: true,
+                                  excludeFromSemantics: true,
+                                                                    ),
+                                        ),
+                                        SizedBox(
+                                          child: Text(getText(snapshot),style: const TextStyle(color:Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 28),),
+                                        )
+                                      ],
                                   );
                                 },
                               ),
@@ -125,36 +139,6 @@ class _SignTranslateState extends State<SignTranslate> {
                             "Initiate Connection",
                             style: TextStyle(color: Colors.white),
                           ),
-
-                    _isConnected
-                        ? Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: SizedBox(
-                              width: 250,
-                              height: 250,
-                              child: StreamBuilder(
-                                stream: _socket.stream,
-                                builder: (context, snapshot) {
-                                  if (!snapshot.hasData) {
-                                    print('Progrossing');
-                                    return const CircularProgressIndicator();
-                                  } else {
-                                    print('No data');
-                                  }
-
-                                  //? Working for single frames
-                                  return TextField(
-                                    textAlign: TextAlign.start,
-                                    key: getText(snapshot),
-                                  );
-                                },
-                              ),
-                            ),
-                          )
-                        : const Text(
-                            " ",
-                          ),
-                    // const Text('Data from server',style: TextStyle(color: Colors.white))
                   ],
                 ),
               ],
