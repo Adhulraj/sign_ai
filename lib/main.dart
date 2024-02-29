@@ -56,7 +56,7 @@ class _SignTranslateState extends State<SignTranslate> {
       body: Container(
         decoration: const BoxDecoration(
             color: Color.fromARGB(
-                255, 15, 30, 44)), //change to Color.fromARGB(255, 15, 30, 44)
+                255, 15, 30, 44)), 
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Center(
@@ -67,7 +67,6 @@ class _SignTranslateState extends State<SignTranslate> {
                   children: [
                     ElevatedButton(
                       onPressed: () => connect(context),
-                      // style: buttonStyle,
                       style: btnStyle,
                       child: const Text("Connect"),
                     ),
@@ -79,7 +78,6 @@ class _SignTranslateState extends State<SignTranslate> {
                     ElevatedButton(
                       onPressed: disconnect,
                       style: btnStyle,
-                      // style: buttonStyle,
                       child: const Text("Disconnect"),
                     ),
                   ],
@@ -90,7 +88,6 @@ class _SignTranslateState extends State<SignTranslate> {
                         ? Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: SizedBox(
-                              // width: 250,
                               child: StreamBuilder(
                                 stream: _socket.stream,
                                 builder: (context, snapshot) {
@@ -106,12 +103,12 @@ class _SignTranslateState extends State<SignTranslate> {
                                   if (snapshot.connectionState ==
                                       ConnectionState.done) {
                                     return const Center(
-                                      child: Text("Connection Closed !"),
+                                      child: Text("Connection Closed !",style: TextStyle(color: Colors.white, fontSize: 28),),
                                     );
                                   }
                                   //? Working for single frames
                                   return Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                       children: [
                                         SizedBox(
                                           child: Image.memory(
@@ -122,7 +119,7 @@ class _SignTranslateState extends State<SignTranslate> {
                                   ),
                                   gaplessPlayback: true,
                                   excludeFromSemantics: true,
-                                                                    ),
+                                            ),
                                         ),
                                         SizedBox(
                                           child: Text(getText(snapshot),style: const TextStyle(color:Colors.white,
@@ -137,7 +134,7 @@ class _SignTranslateState extends State<SignTranslate> {
                           )
                         : const Text(
                             "Initiate Connection",
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(color: Colors.white, fontSize: 26),
                           ),
                   ],
                 ),
@@ -158,7 +155,7 @@ getImage(AsyncSnapshot snapshot) {
 
 getText(AsyncSnapshot snapshot) {
   var data = snapshot.data.toString();
-  final text = data.split("|")[1];
+  var text = data.split("|")[1];
   print(text);
   return text;
 }
