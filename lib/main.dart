@@ -1,52 +1,89 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:sign_ai/websocket.dart';
 import 'package:easy_splash_screen/easy_splash_screen.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
+
+
+void main() => runApp(const MaterialApp(
+      home: SplashPage(),
+      // title: "SignBridge",
+    ));
 
 const btnStyle = ButtonStyle(
     backgroundColor:
         MaterialStatePropertyAll<Color>(Color.fromARGB(255, 18, 214, 240)),
     foregroundColor:
         MaterialStatePropertyAll<Color>(Color.fromARGB(255, 9, 11, 105)));
-void main() => runApp(const MaterialApp(
-      home: SplashFuturePage(),
-      // title: "SignBridge",
-    ));
 
-class SplashFuturePage extends StatefulWidget {
-  const SplashFuturePage({Key? key}) : super(key: key);
+//Code for Splash Screen        
+class SplashPage extends StatefulWidget {
+  const SplashPage({Key? key}) : super(key: key);
 
   @override
-  _SplashFuturePageState createState() => _SplashFuturePageState();
+  _SplashPageState createState() => _SplashPageState();
 }
-class _SplashFuturePageState extends State<SplashFuturePage> {
-  Future<Widget> futureCall() async {
-    // do async operation ( api call, auto login)
-    return Future.value(const SignTranslate());
-  }
 
+class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return EasySplashScreen(
-      logo: Image.network(
-          'https://cdn4.iconfinder.com/data/icons/logos-brands-5/24/flutter-512.png'),
+      logo: Image.asset('assets/app_icon.ico'),
       title: const Text(
-        "Title",
+        "Sign Bridge",
         style: TextStyle(
-          fontSize: 18,
+          fontSize: 64,
           fontWeight: FontWeight.bold,
+          color: Color.fromARGB(255, 208, 235, 240),
+          // fontFamily: 'BIZUDPMincho',
         ),
       ),
-      backgroundColor: Colors.grey.shade400,
+      backgroundColor: const Color.fromARGB(255, 9, 23, 39),
       showLoader: true,
       loadingText: const Text("Loading..."),
-      futureNavigator: futureCall(),
+      navigator: const SignTranslate(),
+      durationInSeconds: 3,
     );
   }
 }
+// class SplashFuturePage extends StatefulWidget {
+//   const
+//SplashFuturePage({Key? key}) : super(key: key);
+
+//   @override
+//   _SplashFuturePageState createState() => _SplashFuturePageState();
+// }
+// class _SplashFuturePageState extends State<SplashFuturePage> {
+//   Future<Widget> futureCall() async {
+//     // do async operation ( api call, auto login)
+
+//     return Future.value(const SignTranslate());
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return EasySplashScreen(
+//       logo: Image.network(
+//           'https://cdn4.iconfinder.com/data/icons/logos-brands-5/24/flutter-512.png'),
+//       title: const Text(
+//         "Title",
+//         style: TextStyle(
+//           fontSize: 18,
+//           fontWeight: FontWeight.bold,
+//         ),
+//       ),
+//       backgroundColor: Colors.grey.shade400,
+//       showLoader: true,
+//       loadingText: const Text("Loading..."),
+//       futureNavigator: futureCall(),
+//     );
+//   }
+// }
 
 
+//Code for Home page
 class SignTranslate extends StatefulWidget {
   const SignTranslate({Key? key}) : super(key: key);
 
@@ -154,13 +191,24 @@ class _SignTranslateState extends State<SignTranslate> {
                                         ),
                                       ),
                                       SizedBox(
-                                        child: Text(
-                                          getText(snapshot),
-                                          style: const TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 28),
-                                        ),
+                                        // child: Text(
+                                        //   getText(snapshot),
+                                        //   style: const TextStyle(
+                                        //       color: Colors.white,
+                                        //       fontWeight: FontWeight.bold,
+                                        //       fontSize: 28),
+                                        // ),
+                                          child: AnimatedTextKit(animatedTexts: [
+                                            TypewriterAnimatedText(
+                                              getText(snapshot),
+                                              textAlign: TextAlign.start,
+                                              speed: const Duration(milliseconds: 30),
+                                              textStyle: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 36
+                                                )
+                                            )
+                                          ]),
                                       )
                                     ],
                                   );
