@@ -1,22 +1,51 @@
-// ignore_for_file: file_names
-
 import 'dart:convert';
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:sign_ai/websocket.dart';
+import 'package:easy_splash_screen/easy_splash_screen.dart';
 
-// import 'package:sign_ai/styles.dart';
 const btnStyle = ButtonStyle(
     backgroundColor:
         MaterialStatePropertyAll<Color>(Color.fromARGB(255, 18, 214, 240)),
     foregroundColor:
         MaterialStatePropertyAll<Color>(Color.fromARGB(255, 9, 11, 105)));
 void main() => runApp(const MaterialApp(
-      home: SignTranslate(),
-      title: "SignBridge",
+      home: SplashFuturePage(),
+      // title: "SignBridge",
     ));
+
+class SplashFuturePage extends StatefulWidget {
+  const SplashFuturePage({Key? key}) : super(key: key);
+
+  @override
+  _SplashFuturePageState createState() => _SplashFuturePageState();
+}
+class _SplashFuturePageState extends State<SplashFuturePage> {
+  Future<Widget> futureCall() async {
+    // do async operation ( api call, auto login)
+    return Future.value(const SignTranslate());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return EasySplashScreen(
+      logo: Image.network(
+          'https://cdn4.iconfinder.com/data/icons/logos-brands-5/24/flutter-512.png'),
+      title: const Text(
+        "Title",
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      backgroundColor: Colors.grey.shade400,
+      showLoader: true,
+      loadingText: const Text("Loading..."),
+      futureNavigator: futureCall(),
+    );
+  }
+}
+
 
 class SignTranslate extends StatefulWidget {
   const SignTranslate({Key? key}) : super(key: key);
@@ -50,13 +79,11 @@ class _SignTranslateState extends State<SignTranslate> {
         foregroundColor: const Color.fromARGB(255, 72, 196, 228),
         title: const Text(
           "Sign Bridge",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 40),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 50),
         ),
       ),
       body: Container(
-        decoration: const BoxDecoration(
-            color: Color.fromARGB(
-                255, 15, 30, 44)), 
+        decoration: const BoxDecoration(color: Color.fromARGB(255, 15, 30, 44)),
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Center(
@@ -103,30 +130,39 @@ class _SignTranslateState extends State<SignTranslate> {
                                   if (snapshot.connectionState ==
                                       ConnectionState.done) {
                                     return const Center(
-                                      child: Text("Connection Closed !",style: TextStyle(color: Colors.white, fontSize: 28),),
+                                      child: Text(
+                                        "Connection Closed !",
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 28),
+                                      ),
                                     );
                                   }
                                   //? Working for single frames
                                   return Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        SizedBox(
-                                          child: Image.memory(
-                                  Uint8List.fromList(
-                                    base64Decode(
-                                      (getImage(snapshot)),
-                                    ),
-                                  ),
-                                  gaplessPlayback: true,
-                                  excludeFromSemantics: true,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      SizedBox(
+                                        child: Image.memory(
+                                          Uint8List.fromList(
+                                            base64Decode(
+                                              (getImage(snapshot)),
                                             ),
+                                          ),
+                                          gaplessPlayback: true,
+                                          excludeFromSemantics: true,
                                         ),
-                                        SizedBox(
-                                          child: Text(getText(snapshot),style: const TextStyle(color:Colors.white,
+                                      ),
+                                      SizedBox(
+                                        child: Text(
+                                          getText(snapshot),
+                                          style: const TextStyle(
+                                              color: Colors.white,
                                               fontWeight: FontWeight.bold,
-                                              fontSize: 28),),
-                                        )
-                                      ],
+                                              fontSize: 28),
+                                        ),
+                                      )
+                                    ],
                                   );
                                 },
                               ),
