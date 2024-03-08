@@ -134,17 +134,19 @@ class _SignTranslateState extends State<SignTranslate> {
                   children: [
                     ElevatedButton(
                       onPressed: () => connect(context),
+                      // style: buttonStyle,
                       style: btnStyle,
                       child: const Text("Connect"),
                     ),
-                    // ElevatedButton(
-                    //   onPressed: () {},
-                    //   style: btnStyle,
-                    //   child: const Text("Swap"),
-                    // ),
+                    ElevatedButton(
+                      onPressed: () {},
+                      style: btnStyle,
+                      child: const Text("Swap"),
+                    ),
                     ElevatedButton(
                       onPressed: disconnect,
                       style: btnStyle,
+                      // style: buttonStyle,
                       child: const Text("Disconnect"),
                     ),
                   ],
@@ -220,8 +222,38 @@ class _SignTranslateState extends State<SignTranslate> {
                           )
                         : const Text(
                             "Initiate Connection",
-                            style: TextStyle(color: Colors.white, fontSize: 26),
+                            style: TextStyle(color: Colors.white),
                           ),
+
+                    _isConnected
+                        ? Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: SizedBox(
+                              width: 250,
+                              height: 250,
+                              child: StreamBuilder(
+                                stream: _socket.stream,
+                                builder: (context, snapshot) {
+                                  if (!snapshot.hasData) {
+                                    print('Progrossing');
+                                    return const CircularProgressIndicator();
+                                  } else {
+                                    print('No data');
+                                  }
+
+                                  //? Working for single frames
+                                  return TextField(
+                                    textAlign: TextAlign.start,
+                                    key: getText(snapshot),
+                                  );
+                                },
+                              ),
+                            ),
+                          )
+                        : const Text(
+                            " ",
+                          ),
+                    // const Text('Data from server',style: TextStyle(color: Colors.white))
                   ],
                 ),
               ],
