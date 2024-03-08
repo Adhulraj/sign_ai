@@ -3,8 +3,8 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:sign_ai/websocket.dart';
-import 'package:easy_splash_screen/easy_splash_screen.dart';
-// import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:sign_ai/easy_splash_screen.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:window_manager/window_manager.dart';
 
 void main() => runApp(const MaterialApp(
@@ -31,13 +31,15 @@ class _SplashPageState extends State<SplashPage> {
   Widget build(BuildContext context) {
     return EasySplashScreen(
       logo: Image.asset('assets/app_icon.ico'),
-      title: const Text(
-        "Sign Bridge",
-        style: TextStyle(
-            fontSize: 64,
-            // fontWeight: FontWeight.bold,
-            color: Color.fromARGB(255, 208, 235, 240),
-            fontFamily: 'Pacifico'),
+      title:  AnimatedTextKit(animatedTexts: [
+          TyperAnimatedText('SignBridge',
+          textStyle: const TextStyle(
+            color: Color.fromARGB(255, 37, 213, 236),
+            fontFamily: 'Pacifico',
+            fontSize: 64
+          ))
+      ],
+      isRepeatingAnimation: false
       ),
       backgroundColor: const Color.fromARGB(255, 9, 23, 39),
       showLoader: true,
