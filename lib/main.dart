@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:sign_ai/websocket.dart';
 import 'package:easy_splash_screen/easy_splash_screen.dart';
-import 'package:animated_text_kit/animated_text_kit.dart';
-
+// import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:window_manager/window_manager.dart';
 
 void main() => runApp(const MaterialApp(
       home: SplashPage(),
@@ -18,7 +18,7 @@ const btnStyle = ButtonStyle(
     foregroundColor:
         MaterialStatePropertyAll<Color>(Color.fromARGB(255, 9, 11, 105)));
 
-//Code for Splash Screen        
+//Code for Splash Screen
 class SplashPage extends StatefulWidget {
   const SplashPage({Key? key}) : super(key: key);
 
@@ -34,15 +34,17 @@ class _SplashPageState extends State<SplashPage> {
       title: const Text(
         "Sign Bridge",
         style: TextStyle(
-          fontSize: 64,
-          fontWeight: FontWeight.bold,
-          color: Color.fromARGB(255, 208, 235, 240),
-          // fontFamily: 'BIZUDPMincho',
-        ),
+            fontSize: 64,
+            // fontWeight: FontWeight.bold,
+            color: Color.fromARGB(255, 208, 235, 240),
+            fontFamily: 'Pacifico'),
       ),
       backgroundColor: const Color.fromARGB(255, 9, 23, 39),
       showLoader: true,
-      loadingText: const Text("Loading..."),
+      loadingText: const Text(
+        "Loading...",
+        style: TextStyle(color: Colors.white),
+      ),
       navigator: const SignTranslate(),
       durationInSeconds: 3,
     );
@@ -58,7 +60,7 @@ class _SplashPageState extends State<SplashPage> {
 // class _SplashFuturePageState extends State<SplashFuturePage> {
 //   Future<Widget> futureCall() async {
 //     // do async operation ( api call, auto login)
-
+        
 //     return Future.value(const SignTranslate());
 //   }
 
@@ -81,7 +83,6 @@ class _SplashPageState extends State<SplashPage> {
 //     );
 //   }
 // }
-
 
 //Code for Home page
 class SignTranslate extends StatefulWidget {
@@ -198,17 +199,16 @@ class _SignTranslateState extends State<SignTranslate> {
                                         //       fontWeight: FontWeight.bold,
                                         //       fontSize: 28),
                                         // ),
-                                          child: AnimatedTextKit(animatedTexts: [
-                                            TypewriterAnimatedText(
+                                        child: AnimatedTextKit(animatedTexts: [
+                                          TypewriterAnimatedText(
                                               getText(snapshot),
                                               textAlign: TextAlign.start,
-                                              speed: const Duration(milliseconds: 30),
+                                              speed: const Duration(
+                                                  milliseconds: 30),
                                               textStyle: const TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 36
-                                                )
-                                            )
-                                          ]),
+                                                  color: Colors.white,
+                                                  fontSize: 36))
+                                        ]),
                                       )
                                     ],
                                   );
