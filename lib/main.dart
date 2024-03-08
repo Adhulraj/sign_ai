@@ -8,7 +8,7 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:window_manager/window_manager.dart';
 
 void main() => runApp(const MaterialApp(
-      home: SplashFuturePage(),
+      home: SplashPage(),
       title: "SignBridge",
     ));
 
@@ -18,76 +18,41 @@ const btnStyle = ButtonStyle(
     foregroundColor:
         MaterialStatePropertyAll<Color>(Color.fromARGB(255, 9, 11, 105)));
 
-// //Code for Splash Screen
-// class SplashPage extends StatefulWidget {
-//   const SplashPage({Key? key}) : super(key: key);
-
-//   @override
-//   _SplashPageState createState() => _SplashPageState();
-// }
-
-// class _SplashPageState extends State<SplashPage> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return EasySplashScreen(
-//       logo: Image.asset('assets/app_icon.ico'),
-//       title:  AnimatedTextKit(animatedTexts: [
-//           TyperAnimatedText('SignBridge',
-//           textStyle: const TextStyle(
-//             color: Color.fromARGB(255, 37, 213, 236),
-//             fontFamily: 'Pacifico',
-//             fontSize: 64
-//           ))
-//       ],
-//       isRepeatingAnimation: false
-//       ),
-//       backgroundColor: const Color.fromARGB(255, 9, 23, 39),
-//       showLoader: true,
-//       loadingText: const Text(
-//         "Loading...",
-//         style: TextStyle(color: Colors.white),
-//       ),
-//       navigator: const SignTranslate(),
-//       durationInSeconds: 3,
-//     );
-//   }
-// }
-
-class SplashFuturePage extends StatefulWidget {
-  const
-SplashFuturePage({Key? key}) : super(key: key);
+//Code for Splash Screen
+class SplashPage extends StatefulWidget {
+  const SplashPage({Key? key}) : super(key: key);
 
   @override
-  _SplashFuturePageState createState() => _SplashFuturePageState();
+  _SplashPageState createState() => _SplashPageState();
 }
-class _SplashFuturePageState extends State<SplashFuturePage> {
-  Future<Widget> futureCall() async {
-    // do async operation ( api call, auto login)
-        
-    return Future.value(const SignTranslate());
-  }
 
+class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return EasySplashScreen(
       logo: Image.asset('assets/app_icon.ico'),
-      title: AnimatedTextKit(animatedTexts: [
+      title:  AnimatedTextKit(animatedTexts: [
           TyperAnimatedText('SignBridge',
           textStyle: const TextStyle(
-            color: const Color.fromARGB(255, 9, 23, 39),
+            color: Color.fromARGB(255, 37, 213, 236),
             fontFamily: 'Pacifico',
             fontSize: 64
           ))
       ],
       isRepeatingAnimation: false
       ),
-      backgroundColor: Colors.grey.shade400,
+      backgroundColor: const Color.fromARGB(255, 9, 23, 39),
       showLoader: true,
-      loadingText: const Text("Loading..."),
-      futureNavigator: futureCall(),
+      loadingText: const Text(
+        "Loading...",
+        style: TextStyle(color: Colors.white),
+      ),
+      navigator: const SignTranslate(),
+      durationInSeconds: 3,
     );
   }
 }
+
 
 //Code for Home page
 class SignTranslate extends StatefulWidget {
