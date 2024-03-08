@@ -1,21 +1,92 @@
-// ignore_for_file: file_names
-
 import 'dart:convert';
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:sign_ai/websocket.dart';
+import 'package:sign_ai/easy_splash_screen.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:window_manager/window_manager.dart';
 
-// import 'package:sign_ai/styles.dart';
-const btnStyle = ButtonStyle(
-    backgroundColor: MaterialStatePropertyAll<Color>(Color.fromARGB(255, 18, 214, 240)),
-    foregroundColor: MaterialStatePropertyAll<Color>(Color.fromARGB(255, 9, 11, 105)));
 void main() => runApp(const MaterialApp(
-      home: SignTranslate(),
-      title: "SignBridge",
+      home: SplashPage(),
+      // title: "SignBridge",
     ));
 
+const btnStyle = ButtonStyle(
+    backgroundColor:
+        MaterialStatePropertyAll<Color>(Color.fromARGB(255, 18, 214, 240)),
+    foregroundColor:
+        MaterialStatePropertyAll<Color>(Color.fromARGB(255, 9, 11, 105)));
+
+//Code for Splash Screen
+class SplashPage extends StatefulWidget {
+  const SplashPage({Key? key}) : super(key: key);
+
+  @override
+  _SplashPageState createState() => _SplashPageState();
+}
+
+class _SplashPageState extends State<SplashPage> {
+  @override
+  Widget build(BuildContext context) {
+    return EasySplashScreen(
+      logo: Image.asset('assets/app_icon.ico'),
+      title:  AnimatedTextKit(animatedTexts: [
+          TyperAnimatedText('SignBridge',
+          textStyle: const TextStyle(
+            color: Color.fromARGB(255, 37, 213, 236),
+            fontFamily: 'Pacifico',
+            fontSize: 64
+          ))
+      ],
+      isRepeatingAnimation: false
+      ),
+      backgroundColor: const Color.fromARGB(255, 9, 23, 39),
+      showLoader: true,
+      loadingText: const Text(
+        "Loading...",
+        style: TextStyle(color: Colors.white),
+      ),
+      navigator: const SignTranslate(),
+      durationInSeconds: 3,
+    );
+  }
+}
+// class SplashFuturePage extends StatefulWidget {
+//   const
+//SplashFuturePage({Key? key}) : super(key: key);
+
+//   @override
+//   _SplashFuturePageState createState() => _SplashFuturePageState();
+// }
+// class _SplashFuturePageState extends State<SplashFuturePage> {
+//   Future<Widget> futureCall() async {
+//     // do async operation ( api call, auto login)
+        
+//     return Future.value(const SignTranslate());
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return EasySplashScreen(
+//       logo: Image.network(
+//           'https://cdn4.iconfinder.com/data/icons/logos-brands-5/24/flutter-512.png'),
+//       title: const Text(
+//         "Title",
+//         style: TextStyle(
+//           fontSize: 18,
+//           fontWeight: FontWeight.bold,
+//         ),
+//       ),
+//       backgroundColor: Colors.grey.shade400,
+//       showLoader: true,
+//       loadingText: const Text("Loading..."),
+//       futureNavigator: futureCall(),
+//     );
+//   }
+// }
+
+//Code for Home page
 class SignTranslate extends StatefulWidget {
   const SignTranslate({Key? key}) : super(key: key);
 
@@ -48,26 +119,42 @@ class _SignTranslateState extends State<SignTranslate> {
         foregroundColor: const Color.fromARGB(255, 72, 196, 228),
         title: const Text(
           "Sign Bridge",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 40),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 50),
         ),
       ),
       body: Container(
-        decoration: const BoxDecoration(
-            color: Color.fromARGB(
-                255, 15, 30, 44)), //change to Color.fromARGB(255, 15, 30, 44)
+        decoration: const BoxDecoration(color: Color.fromARGB(255, 15, 30, 44)),
         child: Padding(
           padding: const EdgeInsets.all(20.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Center(
-                  child: Container(
-                    child: _isConnected
+          child: Center(
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () => connect(context),
+                      style: btnStyle,
+                      child: const Text("Connect"),
+                    ),
+                    // ElevatedButton(
+                    //   onPressed: () {},
+                    //   style: btnStyle,
+                    //   child: const Text("Swap"),
+                    // ),
+                    ElevatedButton(
+                      onPressed: disconnect,
+                      style: btnStyle,
+                      child: const Text("Disconnect"),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    _isConnected
                         ? Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: SizedBox(
-                              // width: 250,
                               child: StreamBuilder(
                                 stream: _socket.stream,
                                 builder: (context, snapshot) {
@@ -83,18 +170,49 @@ class _SignTranslateState extends State<SignTranslate> {
                                   if (snapshot.connectionState ==
                                       ConnectionState.done) {
                                     return const Center(
-                                      child: Text("Connection Closed !"),
+                                      child: Text(
+                                        "Connection Closed !",
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 28),
+                                      ),
                                     );
                                   }
                                   //? Working for single frames
-                                  return Image.memory(
-                                    Uint8List.fromList(
-                                      base64Decode(
-                                        (getImage(snapshot)),
+                                  return Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      SizedBox(
+                                        child: Image.memory(
+                                          Uint8List.fromList(
+                                            base64Decode(
+                                              (getImage(snapshot)),
+                                            ),
+                                          ),
+                                          gaplessPlayback: true,
+                                          excludeFromSemantics: true,
+                                        ),
                                       ),
-                                    ),
-                                    gaplessPlayback: true,
-                                    excludeFromSemantics: true,
+                                      SizedBox(
+                                        // child: Text(
+                                        //   getText(snapshot),
+                                        //   style: const TextStyle(
+                                        //       color: Colors.white,
+                                        //       fontWeight: FontWeight.bold,
+                                        //       fontSize: 28),
+                                        // ),
+                                        child: AnimatedTextKit(animatedTexts: [
+                                          TypewriterAnimatedText(
+                                              getText(snapshot),
+                                              textAlign: TextAlign.start,
+                                              speed: const Duration(
+                                                  milliseconds: 30),
+                                              textStyle: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 36))
+                                        ]),
+                                      )
+                                    ],
                                   );
                                 },
                               ),
@@ -102,74 +220,12 @@ class _SignTranslateState extends State<SignTranslate> {
                           )
                         : const Text(
                             "Initiate Connection",
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(color: Colors.white, fontSize: 26),
                           ),
-                  ),
+                  ],
                 ),
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ElevatedButton(
-                      onPressed: () => connect(context),
-                      // style: buttonStyle,
-                      style: btnStyle,
-                      child: const Text("Connect"),
-                    ),
-                  ),
-                  // Padding(
-                  //   padding: const EdgeInsets.all(8.0),
-                  //   child: ElevatedButton(
-                  //     onPressed: () {},
-                  //     style: btnStyle,
-                  //     child: const Text("Swap"),
-                  //   ),
-                  // ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ElevatedButton(
-                      onPressed: disconnect,
-                      style: btnStyle,
-                      // style: buttonStyle,
-                      child: const Text("Disconnect"),
-                    ),
-                  ),
-                ],
-              ),
-              Expanded(child:_isConnected
-                  ? Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: SizedBox(
-                        width: 250,
-                        height: 250,
-                        child: StreamBuilder(
-                          stream: _socket.stream,
-                          builder: (context, snapshot) {
-                            if (!snapshot.hasData) {
-                              print('Progrossing');
-                              return const CircularProgressIndicator();
-                            } else {
-                              print('No data');
-                            }
-
-                            //? Working for single frames
-                            return TextField(
-                              textAlign: TextAlign.start,
-                              key: getText(snapshot),
-                            );
-                          },
-                        ),
-                      ),
-                    )
-                  : const Text(
-                      "Waiting to connect",
-                      style: TextStyle(color: Colors.white),
-                    ),
-               )
-              // const Text('Data from server',style: TextStyle(color: Colors.white))
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -185,7 +241,7 @@ getImage(AsyncSnapshot snapshot) {
 
 getText(AsyncSnapshot snapshot) {
   var data = snapshot.data.toString();
-  final text = data.split("|")[1];
+  var text = data.split("|")[1];
   print(text);
   return text;
 }
