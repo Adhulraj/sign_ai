@@ -8,8 +8,8 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:window_manager/window_manager.dart';
 
 void main() => runApp(const MaterialApp(
-      home: SplashPage(),
-      // title: "SignBridge",
+      home: SplashFuturePage(),
+      title: "SignBridge",
     ));
 
 const btnStyle = ButtonStyle(
@@ -18,73 +18,76 @@ const btnStyle = ButtonStyle(
     foregroundColor:
         MaterialStatePropertyAll<Color>(Color.fromARGB(255, 9, 11, 105)));
 
-//Code for Splash Screen
-class SplashPage extends StatefulWidget {
-  const SplashPage({Key? key}) : super(key: key);
+// //Code for Splash Screen
+// class SplashPage extends StatefulWidget {
+//   const SplashPage({Key? key}) : super(key: key);
+
+//   @override
+//   _SplashPageState createState() => _SplashPageState();
+// }
+
+// class _SplashPageState extends State<SplashPage> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return EasySplashScreen(
+//       logo: Image.asset('assets/app_icon.ico'),
+//       title:  AnimatedTextKit(animatedTexts: [
+//           TyperAnimatedText('SignBridge',
+//           textStyle: const TextStyle(
+//             color: Color.fromARGB(255, 37, 213, 236),
+//             fontFamily: 'Pacifico',
+//             fontSize: 64
+//           ))
+//       ],
+//       isRepeatingAnimation: false
+//       ),
+//       backgroundColor: const Color.fromARGB(255, 9, 23, 39),
+//       showLoader: true,
+//       loadingText: const Text(
+//         "Loading...",
+//         style: TextStyle(color: Colors.white),
+//       ),
+//       navigator: const SignTranslate(),
+//       durationInSeconds: 3,
+//     );
+//   }
+// }
+
+class SplashFuturePage extends StatefulWidget {
+  const
+SplashFuturePage({Key? key}) : super(key: key);
 
   @override
-  _SplashPageState createState() => _SplashPageState();
+  _SplashFuturePageState createState() => _SplashFuturePageState();
 }
+class _SplashFuturePageState extends State<SplashFuturePage> {
+  Future<Widget> futureCall() async {
+    // do async operation ( api call, auto login)
+        
+    return Future.value(const SignTranslate());
+  }
 
-class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return EasySplashScreen(
       logo: Image.asset('assets/app_icon.ico'),
-      title:  AnimatedTextKit(animatedTexts: [
+      title: AnimatedTextKit(animatedTexts: [
           TyperAnimatedText('SignBridge',
           textStyle: const TextStyle(
-            color: Color.fromARGB(255, 37, 213, 236),
+            color: const Color.fromARGB(255, 9, 23, 39),
             fontFamily: 'Pacifico',
             fontSize: 64
           ))
       ],
       isRepeatingAnimation: false
       ),
-      backgroundColor: const Color.fromARGB(255, 9, 23, 39),
+      backgroundColor: Colors.grey.shade400,
       showLoader: true,
-      loadingText: const Text(
-        "Loading...",
-        style: TextStyle(color: Colors.white),
-      ),
-      navigator: const SignTranslate(),
-      durationInSeconds: 3,
+      loadingText: const Text("Loading..."),
+      futureNavigator: futureCall(),
     );
   }
 }
-// class SplashFuturePage extends StatefulWidget {
-//   const
-//SplashFuturePage({Key? key}) : super(key: key);
-
-//   @override
-//   _SplashFuturePageState createState() => _SplashFuturePageState();
-// }
-// class _SplashFuturePageState extends State<SplashFuturePage> {
-//   Future<Widget> futureCall() async {
-//     // do async operation ( api call, auto login)
-        
-//     return Future.value(const SignTranslate());
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return EasySplashScreen(
-//       logo: Image.network(
-//           'https://cdn4.iconfinder.com/data/icons/logos-brands-5/24/flutter-512.png'),
-//       title: const Text(
-//         "Title",
-//         style: TextStyle(
-//           fontSize: 18,
-//           fontWeight: FontWeight.bold,
-//         ),
-//       ),
-//       backgroundColor: Colors.grey.shade400,
-//       showLoader: true,
-//       loadingText: const Text("Loading..."),
-//       futureNavigator: futureCall(),
-//     );
-//   }
-// }
 
 //Code for Home page
 class SignTranslate extends StatefulWidget {
