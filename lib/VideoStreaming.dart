@@ -25,7 +25,7 @@ class _SignTranslateState extends State<SignTranslate> {
   bool signToText = true; // Add this line to declare the signToText flag
 
   void connect(BuildContext context) async {
-    _socket.connect();
+    // _socket.connect();
     setState(() {
       _isConnected = true;
     });

@@ -6,6 +6,7 @@ import 'package:sign_ai/websocket.dart';
 import 'package:sign_ai/easy_splash_screen.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:sign_ai/display.dart';
 
 void main() => runApp(const MaterialApp(
       home: SplashPage(),
@@ -35,13 +36,12 @@ class _SplashPageState extends State<SplashPage> {
         TyperAnimatedText('SignBridge',
             textStyle: const TextStyle(
                 color: Color.fromARGB(255, 37, 213, 236),
-                fontFamily: 'Pacifico',
+                fontFamily: 'FFF_Tusj',
                 fontSize: 64))
       ], isRepeatingAnimation: false),
       backgroundColor: const Color.fromARGB(255, 9, 23, 39),
       showLoader: false,
       navigator: const SignTranslate(),
-      durationInSeconds: 3,
     );
   }
 }
@@ -57,6 +57,8 @@ class SignTranslate extends StatefulWidget {
 class _SignTranslateState extends State<SignTranslate> {
   final WebSocket _socket = WebSocket("ws://localhost:5001");
   bool _isConnected = false;
+  bool _startBtn = false;
+  bool _swapped = false;
   void connect() async {
     _socket.connect();
     setState(() {
@@ -79,113 +81,58 @@ class _SignTranslateState extends State<SignTranslate> {
           foregroundColor: const Color.fromARGB(255, 72, 196, 228),
           title: const Text(
             "Sign Bridge",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 50),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 38),
           ),
         ),
         body: _isConnected
-            ? Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: SizedBox(
-                  child: StreamBuilder(
-                    stream: _socket.stream,
-                    builder: (context, snapshot) {
-                      if (!snapshot.hasData) {
-                        print('Progrossing');
-                        return const CircularProgressIndicator(
+            ? SizedBox(
+                child: StreamBuilder(
+                  stream: _socket.stream,
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      print('Progrossing');
+                      return Display(
+                        onPressed: _isConnected ? disconnect : connect,
+                        firstSection: const CircularProgressIndicator(
                           color: Colors.white,
-                        );
-                      } else {
-                        print('No data');
-                      }
-
-                      if (snapshot.connectionState == ConnectionState.done) {
-                        return const Center(
-                          child: Text(
-                            "Connection Closed !",
-                            style: TextStyle(color: Colors.white, fontSize: 28),
-                          ),
-                        );
-                      }
-                      //? Working for single frames
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          SizedBox(
-                            child: Image.memory(
-                              Uint8List.fromList(
-                                base64Decode(
-                                  (getImage(snapshot)),
-                                ),
-                              ),
-                              gaplessPlayback: true,
-                              excludeFromSemantics: true,
-                            ),
-                          ),
-                          SizedBox(
-                            // child: Text(
-                            //   getText(snapshot),
-                            //   style: const TextStyle(
-                            //       color: Colors.white,
-                            //       fontWeight: FontWeight.bold,
-                            //       fontSize: 28),
-                            // ),
-                            child: AnimatedTextKit(animatedTexts: [
-                              TypewriterAnimatedText(getText(snapshot),
-                                  textAlign: TextAlign.start,
-                                  speed: const Duration(milliseconds: 30),
-                                  textStyle: const TextStyle(
-                                      color: Colors.white, fontSize: 36))
-                            ]),
-                          )
-                        ],
+                        ),
                       );
-                    },
-                  ),
+                    }
+
+                    if (snapshot.connectionState == ConnectionState.done) {
+                      return Display(
+                        onPressed: _isConnected ? disconnect : connect,
+                        firstSection: const Text(
+                          'Connection Closed',
+                          style:
+                              TextStyle(fontSize: 48, color: Colors.lightBlue),
+                        ),
+                      );
+                    }
+                    //? Working for single frames
+                    return Display(
+                      startBtn: _isConnected,
+                      onPressed: _isConnected ? disconnect : connect,
+                      firstSection: Image.memory(
+                        Uint8List.fromList(
+                          base64Decode(
+                            (getImage(snapshot)),
+                          ),
+                        ),
+                        gaplessPlayback: true,
+                        excludeFromSemantics: true,
+                      ),
+                      secondSection: Text(
+                        getText(snapshot),
+                        style: const TextStyle(color: Color.fromARGB(255, 20, 13, 13),fontWeight: FontWeight.bold,fontSize: 36),
+                      ),
+                    );
+                  },
                 ),
               )
-            : Padding(
-                padding: const EdgeInsets.all(32.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                            color: Colors.blue,
-                            border: Border.all(
-                              color: Colors.blue,
-                            ),
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(12))),
-                        child: const Center(
-                          child: Text('First sub-section'),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                        width: 100,
-                        child: Column(children: [
-                          ElevatedButton(onPressed: () => connect(), 
-                              child: Icon(Icons.link),
-                              ),
-                          ElevatedButton(onPressed: () => disconnect(), 
-                          child: Icon(Icons.link_off))
-                        ])),
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                            color: Colors.blue,
-                            border: Border.all(
-                              color: Colors.blue,
-                            ),
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(12))),
-                        child: const Center(
-                          child: Text('Third sub-section'),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+            : Display(
+                onPressed: _isConnected ? disconnect : connect,
+                startBtn: _isConnected,
               ));
   }
 }
