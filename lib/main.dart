@@ -31,28 +31,20 @@ class _SplashPageState extends State<SplashPage> {
   Widget build(BuildContext context) {
     return EasySplashScreen(
       logo: Image.asset('assets/app_icon.ico'),
-      title:  AnimatedTextKit(animatedTexts: [
-          TyperAnimatedText('SignBridge',
-          textStyle: const TextStyle(
-            color: Color.fromARGB(255, 37, 213, 236),
-            fontFamily: 'Pacifico',
-            fontSize: 64
-          ))
-      ],
-      isRepeatingAnimation: false
-      ),
+      title: AnimatedTextKit(animatedTexts: [
+        TyperAnimatedText('SignBridge',
+            textStyle: const TextStyle(
+                color: Color.fromARGB(255, 37, 213, 236),
+                fontFamily: 'Pacifico',
+                fontSize: 64))
+      ], isRepeatingAnimation: false),
       backgroundColor: const Color.fromARGB(255, 9, 23, 39),
-      showLoader: true,
-      loadingText: const Text(
-        "Loading...",
-        style: TextStyle(color: Colors.white),
-      ),
+      showLoader: false,
       navigator: const SignTranslate(),
       durationInSeconds: 3,
     );
   }
 }
-
 
 //Code for Home page
 class SignTranslate extends StatefulWidget {
@@ -65,7 +57,7 @@ class SignTranslate extends StatefulWidget {
 class _SignTranslateState extends State<SignTranslate> {
   final WebSocket _socket = WebSocket("ws://localhost:5001");
   bool _isConnected = false;
-  void connect(BuildContext context) async {
+  void connect() async {
     _socket.connect();
     setState(() {
       _isConnected = true;
@@ -82,122 +74,119 @@ class _SignTranslateState extends State<SignTranslate> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 15, 30, 44),
-        foregroundColor: const Color.fromARGB(255, 72, 196, 228),
-        title: const Text(
-          "Sign Bridge",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 50),
-        ),
-      ),
-      body: Container(
-        decoration: const BoxDecoration(color: Color.fromARGB(255, 15, 30, 44)),
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Center(
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () => connect(context),
-                      style: btnStyle,
-                      child: const Text("Connect"),
-                    ),
-                    // ElevatedButton(
-                    //   onPressed: () {},
-                    //   style: btnStyle,
-                    //   child: const Text("Swap"),
-                    // ),
-                    ElevatedButton(
-                      onPressed: disconnect,
-                      style: btnStyle,
-                      child: const Text("Disconnect"),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    _isConnected
-                        ? Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: SizedBox(
-                              child: StreamBuilder(
-                                stream: _socket.stream,
-                                builder: (context, snapshot) {
-                                  if (!snapshot.hasData) {
-                                    print('Progrossing');
-                                    return const CircularProgressIndicator(
-                                      color: Colors.white,
-                                    );
-                                  } else {
-                                    print('No data');
-                                  }
-
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.done) {
-                                    return const Center(
-                                      child: Text(
-                                        "Connection Closed !",
-                                        style: TextStyle(
-                                            color: Colors.white, fontSize: 28),
-                                      ),
-                                    );
-                                  }
-                                  //? Working for single frames
-                                  return Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      SizedBox(
-                                        child: Image.memory(
-                                          Uint8List.fromList(
-                                            base64Decode(
-                                              (getImage(snapshot)),
-                                            ),
-                                          ),
-                                          gaplessPlayback: true,
-                                          excludeFromSemantics: true,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        // child: Text(
-                                        //   getText(snapshot),
-                                        //   style: const TextStyle(
-                                        //       color: Colors.white,
-                                        //       fontWeight: FontWeight.bold,
-                                        //       fontSize: 28),
-                                        // ),
-                                        child: AnimatedTextKit(animatedTexts: [
-                                          TypewriterAnimatedText(
-                                              getText(snapshot),
-                                              textAlign: TextAlign.start,
-                                              speed: const Duration(
-                                                  milliseconds: 30),
-                                              textStyle: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 36))
-                                        ]),
-                                      )
-                                    ],
-                                  );
-                                },
-                              ),
-                            ),
-                          )
-                        : const Text(
-                            "Initiate Connection",
-                            style: TextStyle(color: Colors.white, fontSize: 26),
-                          ),
-                  ],
-                ),
-              ],
-            ),
+        appBar: AppBar(
+          backgroundColor: const Color.fromARGB(255, 15, 30, 44),
+          foregroundColor: const Color.fromARGB(255, 72, 196, 228),
+          title: const Text(
+            "Sign Bridge",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 50),
           ),
         ),
-      ),
-    );
+        body: _isConnected
+            ? Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SizedBox(
+                  child: StreamBuilder(
+                    stream: _socket.stream,
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        print('Progrossing');
+                        return const CircularProgressIndicator(
+                          color: Colors.white,
+                        );
+                      } else {
+                        print('No data');
+                      }
+
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        return const Center(
+                          child: Text(
+                            "Connection Closed !",
+                            style: TextStyle(color: Colors.white, fontSize: 28),
+                          ),
+                        );
+                      }
+                      //? Working for single frames
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          SizedBox(
+                            child: Image.memory(
+                              Uint8List.fromList(
+                                base64Decode(
+                                  (getImage(snapshot)),
+                                ),
+                              ),
+                              gaplessPlayback: true,
+                              excludeFromSemantics: true,
+                            ),
+                          ),
+                          SizedBox(
+                            // child: Text(
+                            //   getText(snapshot),
+                            //   style: const TextStyle(
+                            //       color: Colors.white,
+                            //       fontWeight: FontWeight.bold,
+                            //       fontSize: 28),
+                            // ),
+                            child: AnimatedTextKit(animatedTexts: [
+                              TypewriterAnimatedText(getText(snapshot),
+                                  textAlign: TextAlign.start,
+                                  speed: const Duration(milliseconds: 30),
+                                  textStyle: const TextStyle(
+                                      color: Colors.white, fontSize: 36))
+                            ]),
+                          )
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              )
+            : Padding(
+                padding: const EdgeInsets.all(32.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: Colors.blue,
+                            border: Border.all(
+                              color: Colors.blue,
+                            ),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(12))),
+                        child: const Center(
+                          child: Text('First sub-section'),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                        width: 100,
+                        child: Column(children: [
+                          ElevatedButton(onPressed: () => connect(), 
+                              child: Icon(Icons.link),
+                              ),
+                          ElevatedButton(onPressed: () => disconnect(), 
+                          child: Icon(Icons.link_off))
+                        ])),
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: Colors.blue,
+                            border: Border.all(
+                              color: Colors.blue,
+                            ),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(12))),
+                        child: const Center(
+                          child: Text('Third sub-section'),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ));
   }
 }
 
