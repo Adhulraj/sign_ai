@@ -3,10 +3,10 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:sign_ai/websocket.dart';
-import 'package:sign_ai/easy_splash_screen.dart';
+import 'package:SignBridge/websocket.dart';
+import 'package:SignBridge/easy_splash_screen.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:sign_ai/display.dart';
+import 'package:SignBridge/display.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
