@@ -82,9 +82,6 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-    - family: Pacifico
-      fonts:
-        - asset: fonts/Pacifico.ttf
     
     - family: FFF_Tusj
       fonts:
