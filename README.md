@@ -1,16 +1,16 @@
-# sign_ai
+# SignBridge
 
-A new Flutter project.
+###### The project is submitted in fulfillment of the requirement for the Bachelor of Computer Science (BSc CS), Calicut University.
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
+Our Sign Language Translator aims to facilitate communication between hearing-impaired and normal hearing individuals. It translates sign language into text, using a camera to capture gestures and machine learning models for interpretation. The system is developed with Flutter for cross-platform UI and Python for backend operations. 
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+**Group Members:**                   
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+* Adhulraj K R
+* Amal K Jose
+* Brinto Varghese
+* Neeraj U V
+
+**Under The Guidance of :** Ms. Anagha K J
