@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api, prefer_const_constructors_in_immutables
+
 library easy_splash_screen;
 
 import 'dart:async';
@@ -5,7 +7,6 @@ import 'dart:core';
 
 import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
-
 
 class EasySplashScreen extends StatefulWidget {
   /// App title, shown in the middle of screen in case of no image available
@@ -51,6 +52,7 @@ class EasySplashScreen extends StatefulWidget {
   final Future<Object>? futureNavigator;
 
   EasySplashScreen({
+    super.key,
     this.loaderColor = Colors.black,
     this.futureNavigator,
     this.navigator,
@@ -86,12 +88,12 @@ class _EasySplashScreenState extends State<EasySplashScreen> {
         }
       });
     } else {
-      widget.futureNavigator!.then((_route) {
-        if (_route is String) {
-          Navigator.of(context).pushReplacementNamed(_route);
-        } else if (_route is Widget) {
+      widget.futureNavigator!.then((route) {
+        if (route is String) {
+          Navigator.of(context).pushReplacementNamed(route);
+        } else if (route is Widget) {
           Navigator.of(context)
-              .pushReplacement(MaterialPageRoute(builder: (context) => _route));
+              .pushReplacement(MaterialPageRoute(builder: (context) => route));
         }
       });
     }
@@ -99,76 +101,71 @@ class _EasySplashScreenState extends State<EasySplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        fit: StackFit.expand,
-        children: <Widget>[
-          Container(
-            decoration: BoxDecoration(
-              image: widget.backgroundImage != null
-                  ? DecorationImage(
-                      fit: BoxFit.cover,
-                      image: widget.backgroundImage!,
-                    )
-                  : null,
-              gradient: widget.gradientBackground,
-              color: widget.backgroundColor,
-            ),
+    return Flexible(child:Stack(
+      children: <Widget>[
+        Container(
+          decoration: BoxDecoration(
+            image: widget.backgroundImage != null
+                ? DecorationImage(
+                    fit: BoxFit.cover,
+                    image: widget.backgroundImage!,
+                  )
+                : null,
+            gradient: widget.gradientBackground,
+            color: widget.backgroundColor,
           ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Expanded(
-                child: Align(
-                  alignment: Alignment.center,
-                  child: Container(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        CircleAvatar(
-                          backgroundColor: Colors.transparent,
-                          child: widget.logo,
-                          radius: widget.logoWidth,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 25.0),
-                        ),
-                        if (widget.title != null) widget.title!
-                      ],
+        ),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Expanded(
+              child: Align(
+                alignment: Alignment.center,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: Colors.transparent,
+                      radius: widget.logoWidth,
+                      child: widget.logo,
                     ),
-                  ),
+                    const Padding(
+                      padding: EdgeInsets.only(top: 25.0),
+                    ),
+                    if (widget.title != null) widget.title!
+                  ],
                 ),
               ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Container(
-                  padding: EdgeInsets.only(bottom: 25),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      widget.showLoader
-                          ? CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color?>(
-                                widget.loaderColor,
-                              ),
-                            )
-                          : Container(),
-                      if (widget.loadingText.data!.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 20.0),
-                        ),
-                      Padding(
-                        padding: widget.loadingTextPadding,
-                        child: widget.loadingText,
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                padding: const EdgeInsets.only(bottom: 25),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    widget.showLoader
+                        ? CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color?>(
+                              widget.loaderColor,
+                            ),
+                          )
+                        : Container(),
+                    if (widget.loadingText.data!.isNotEmpty)
+                      const Padding(
+                        padding: EdgeInsets.only(top: 20.0),
                       ),
-                    ],
-                  ),
+                    Padding(
+                      padding: widget.loadingTextPadding,
+                      child: widget.loadingText,
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ],
-      ),
-    );
+            ),
+          ],
+        ),
+      ],
+    ));
   }
 }
