@@ -230,21 +230,34 @@ void showInfo(BuildContext context) {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: const Text('About'),
+        title: const Text(
+          'About',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         content: Container(
-          width: 300.0,
-          height: 300.0,
-          color: Colors.lightBlueAccent, // Adjust this value as needed
+          width: 500.0,
+          height: 400.0,
+          decoration: const  BoxDecoration(
+              color: Color.fromARGB(
+                  120, 96, 191, 235),
+              borderRadius: BorderRadius.all(Radius.circular(12))), // Adjust this value as needed
           child: const Markdown(data: '''
-This is an application that serves as a placeholder for your actual application. It is currently in version 1.0.0.
+## The project report is submitted in fulfillment of the requirement for the Bachelor of Computer Science (BSc CS), Calicut University.
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod eu lorem et ultricies. In porta lorem at dui semper porttitor. Nullam quis cursus dui.
 
-This application is done as part of a project by 4 members:
-- Member 1
-- Member 2
-- Member 3
-- Member 4
+
+Our Sign Language Translator aims to facilitate communication between hearing-impaired and normal hearing individuals. It translates sign language into text, using a camera to capture gestures and machine learning models for interpretation. The system is developed with Flutter for cross-platform UI and Python for backend operations. 
+
+**Group Members:**                   
+
+* Adhulraj K R
+* Amal K Jose
+* Brinto Varghese
+* Neeraj U V
+
+**Under The Guidance of :** Ms. Anagha K J
+
+*Version :* `1.0.0` 
           '''),
         ),
         actions: <Widget>[
