@@ -1,23 +1,66 @@
+// ignore_for_file: library_private_types_in_public_api, avoid_print
+
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:sign_ai/websocket.dart';
 import 'package:sign_ai/easy_splash_screen.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:window_manager/window_manager.dart';
 import 'package:sign_ai/display.dart';
+import 'package:bitsdojo_window/bitsdojo_window.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 
-void main() => runApp(const MaterialApp(
-      home: SplashPage(),
-      title: "SignBridge",
-    ));
+void main() {
+  runApp(const SplashPage());
+  doWhenWindowReady(() {
+    final win = appWindow;
+    const initialSize = Size(800, 600);
+    win.minSize = initialSize;
+    win.size = initialSize;
+    win.alignment = Alignment.center;
+    win.show();
+  });
+}
 
-const btnStyle = ButtonStyle(
-    backgroundColor:
-        MaterialStatePropertyAll<Color>(Color.fromARGB(255, 18, 214, 240)),
-    foregroundColor:
-        MaterialStatePropertyAll<Color>(Color.fromARGB(255, 9, 11, 105)));
+const Color bgColor = Color.fromARGB(255, 9, 23, 39);
+const Color fgColor = Color.fromARGB(255, 26, 215, 221);
+const Color txtColor = Color.fromARGB(255, 83, 248, 253);
+
+final buttonColors = WindowButtonColors(
+    iconNormal: fgColor,
+    mouseOver: const Color.fromARGB(255, 27, 64, 107),
+    mouseDown: fgColor,
+    iconMouseOver: fgColor,
+    iconMouseDown: const Color.fromARGB(255, 27, 64, 107));
+
+final closeButtonColors = WindowButtonColors(
+    mouseOver: const Color(0xFFD32F2F),
+    mouseDown: const Color(0xFFB71C1C),
+    iconNormal: fgColor,
+    iconMouseOver: Colors.white);
+
+final btnStyle = ButtonStyle(
+    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+      RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20.0),
+      ),
+    ),
+    backgroundColor: const MaterialStatePropertyAll<Color>(bgColor),
+    foregroundColor: const MaterialStatePropertyAll<Color>(fgColor));
+
+class WindowButtons extends StatelessWidget {
+  const WindowButtons({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        MinimizeWindowButton(colors: buttonColors),
+        MaximizeWindowButton(colors: buttonColors),
+        CloseWindowButton(colors: closeButtonColors),
+      ],
+    );
+  }
+}
 
 //Code for Splash Screen
 class SplashPage extends StatefulWidget {
@@ -30,19 +73,31 @@ class SplashPage extends StatefulWidget {
 class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
-    return EasySplashScreen(
-      logo: Image.asset('assets/app_icon.ico'),
-      title: AnimatedTextKit(animatedTexts: [
-        TyperAnimatedText('SignBridge',
-            textStyle: const TextStyle(
-                color: Color.fromARGB(255, 37, 213, 236),
-                fontFamily: 'FFF_Tusj',
-                fontSize: 64))
-      ], isRepeatingAnimation: false),
-      backgroundColor: const Color.fromARGB(255, 9, 23, 39),
-      showLoader: false,
-      navigator: const SignTranslate(),
-    );
+    return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(
+            body: Container(
+                color: bgColor,
+                child: Column(children: [
+                  WindowTitleBarBox(
+                      child: Row(children: [
+                    Expanded(child: MoveWindow()),
+                    const WindowButtons()
+                  ])),
+                  EasySplashScreen(
+                    logo: Image.asset('assets/app_icon.ico'),
+                    title: AnimatedTextKit(animatedTexts: [
+                      TyperAnimatedText('SignBridge',
+                          textStyle: const TextStyle(
+                              color: txtColor,
+                              fontFamily: 'FFF_Tusj',
+                              fontSize: 64))
+                    ], isRepeatingAnimation: false),
+                    backgroundColor: bgColor,
+                    showLoader: false,
+                    navigator: const SignTranslate(),
+                  )
+                ]))));
   }
 }
 
@@ -57,8 +112,6 @@ class SignTranslate extends StatefulWidget {
 class _SignTranslateState extends State<SignTranslate> {
   final WebSocket _socket = WebSocket("ws://localhost:5001");
   bool _isConnected = false;
-  bool _startBtn = false;
-  bool _swapped = false;
   void connect() async {
     _socket.connect();
     setState(() {
@@ -75,66 +128,136 @@ class _SignTranslateState extends State<SignTranslate> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          backgroundColor: const Color.fromARGB(255, 15, 30, 44),
-          foregroundColor: const Color.fromARGB(255, 72, 196, 228),
-          title: const Text(
-            "Sign Bridge",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 38),
-          ),
-        ),
-        body: _isConnected
-            ? SizedBox(
-                child: StreamBuilder(
-                  stream: _socket.stream,
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      print('Progrossing');
-                      return Display(
-                        onPressed: _isConnected ? disconnect : connect,
-                        firstSection: const CircularProgressIndicator(
-                          color: Colors.white,
-                        ),
-                      );
-                    }
+    return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(
+            body: Container(
+                color: bgColor,
+                child: Column(children: [
+                  WindowTitleBarBox(
+                      child: Row(children: [
+                    Expanded(child: MoveWindow()),
+                    const WindowButtons()
+                  ])),
+                  Builder(
+                    builder: (context) => SizedBox(
+                      height: 50,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(32, 0, 32, 0),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text("SignBridge",
+                                  style: TextStyle(
+                                      color: txtColor,
+                                      fontSize: 36,
+                                      fontWeight: FontWeight.w500)),
+                              ElevatedButton(
+                                onPressed: () => showInfo(context),
+                                style: btnStyle,
+                                child: const Icon(Icons.info_rounded),
+                              )
+                            ]),
+                      ),
+                    ),
+                  ),
+                  _isConnected
+                      ? Flexible(
+                          fit: FlexFit.loose,
+                          child: StreamBuilder(
+                            stream: _socket.stream,
+                            builder: (context, snapshot) {
+                              if (!snapshot.hasData) {
+                                print('Progrossing');
+                                return Display(
+                                  startBtn: true,
+                                  onPressed:
+                                      _isConnected ? disconnect : connect,
+                                  firstSection: const CircularProgressIndicator(
+                                    color: Colors.white,
+                                  ),
+                                );
+                              }
 
-                    if (snapshot.connectionState == ConnectionState.done) {
-                      return Display(
-                        onPressed: _isConnected ? disconnect : connect,
-                        firstSection: const Text(
-                          'Connection Closed',
-                          style:
-                              TextStyle(fontSize: 48, color: Colors.lightBlue),
-                        ),
-                      );
-                    }
-                    //? Working for single frames
-                    return Display(
-                      startBtn: _isConnected,
-                      onPressed: _isConnected ? disconnect : connect,
-                      firstSection: Image.memory(
-                        Uint8List.fromList(
-                          base64Decode(
-                            (getImage(snapshot)),
+                              if (snapshot.connectionState ==
+                                  ConnectionState.done) {
+                                return Display(
+                                  onPressed:
+                                      _isConnected ? disconnect : connect,
+                                  firstSection: const Text(
+                                    'Connection Closed',
+                                    style: TextStyle(
+                                        fontSize: 48, color: txtColor),
+                                  ),
+                                );
+                              }
+                              //? Working for single frames
+                              return Display(
+                                startBtn: _isConnected,
+                                onPressed: _isConnected ? disconnect : connect,
+                                firstSection: Image.memory(
+                                  Uint8List.fromList(
+                                    base64Decode(
+                                      (getImage(snapshot)),
+                                    ),
+                                  ),
+                                  gaplessPlayback: true,
+                                  excludeFromSemantics: true,
+                                ),
+                                secondSection: Text(
+                                  getText(snapshot),
+                                  style: const TextStyle(
+                                      color: Color.fromARGB(255, 197, 238, 236),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 36),
+                                ),
+                              );
+                            },
                           ),
-                        ),
-                        gaplessPlayback: true,
-                        excludeFromSemantics: true,
-                      ),
-                      secondSection: Text(
-                        getText(snapshot),
-                        style: const TextStyle(color: Color.fromARGB(255, 20, 13, 13),fontWeight: FontWeight.bold,fontSize: 36),
-                      ),
-                    );
-                  },
-                ),
-              )
-            : Display(
-                onPressed: _isConnected ? disconnect : connect,
-                startBtn: _isConnected,
-              ));
+                        )
+                      : Flexible(
+                          fit: FlexFit.loose,
+                          child: Display(
+                            onPressed: _isConnected ? disconnect : connect,
+                            startBtn: _isConnected,
+                          ))
+                ]))));
   }
+}
+
+void showInfo(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('About'),
+        content: Container(
+          width: 300.0,
+          height: 300.0,
+          color: Colors.lightBlueAccent, // Adjust this value as needed
+          child: const Markdown(data: '''
+This is an application that serves as a placeholder for your actual application. It is currently in version 1.0.0.
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod eu lorem et ultricies. In porta lorem at dui semper porttitor. Nullam quis cursus dui.
+
+This application is done as part of a project by 4 members:
+- Member 1
+- Member 2
+- Member 3
+- Member 4
+          '''),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Icon(Icons.close),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
 }
 
 getImage(AsyncSnapshot snapshot) {

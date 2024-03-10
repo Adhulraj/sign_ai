@@ -1,8 +1,11 @@
+// ignore_for_file: library_private_types_in_public_api, must_be_immutable
+
 import 'package:flutter/material.dart';
+
+const boxColor = Color.fromARGB(178, 33, 149, 243);
 
 class Display extends StatefulWidget {
   bool startBtn;
-  bool swapped;
   Color background;
   Widget firstSection;
   Widget secondSection;
@@ -11,10 +14,10 @@ class Display extends StatefulWidget {
   Display({
     super.key,
     this.startBtn = false,
-    this.swapped = false,
-    this.firstSection = const Text("First Section"),
-    this.secondSection = const Text("Second Section"),
-    this.background = const Color.fromARGB(255, 15, 30, 44),
+    this.firstSection = const Text("Click Start",
+        style: TextStyle(color: Colors.white, fontSize: 28)),
+    this.secondSection = const Text(""),
+    this.background = const Color.fromARGB(255, 9, 23, 39),
     required this.onPressed,
   });
 
@@ -34,9 +37,9 @@ class _DisplayState extends State<Display> {
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
-                      color: Colors.blue,
+                      color: boxColor,
                       border: Border.all(
-                        color: Colors.blue,
+                        color: boxColor,
                       ),
                       borderRadius:
                           const BorderRadius.all(Radius.circular(12))),
@@ -53,7 +56,8 @@ class _DisplayState extends State<Display> {
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[FloatingActionButton(
+                          children: <Widget>[
+                            FloatingActionButton(
                               onPressed: widget.onPressed,
                               tooltip: widget.startBtn ? 'Stop' : 'Start',
                               child: Icon(widget.startBtn
@@ -68,9 +72,9 @@ class _DisplayState extends State<Display> {
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
-                      color: Colors.blue,
+                      color: boxColor,
                       border: Border.all(
-                        color: Colors.blue,
+                        color: boxColor,
                       ),
                       borderRadius:
                           const BorderRadius.all(Radius.circular(12))),
