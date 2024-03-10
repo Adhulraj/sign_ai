@@ -1,40 +1,33 @@
 
 import cv2
 import numpy as np
-import os
 import mediapipe as mp
-
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
-from tensorflow.keras.callbacks import TensorBoard
 import websockets
 import asyncio
 import base64
-# from scipy import stats
+import os
+import subprocess
+import signal
 
 mp_holistic = mp.solutions.holistic  # Holistic model
 mp_drawing = mp.solutions.drawing_utils  # Drawing utilities
-
-
-# Path for exported data, numpy arrays
-DATA_PATH = os.path.join('MP_Data')
 port = 5001
 
 # Actions that we try to detect
-actions = np.array(['hello','hai','iloveyou'])
+actions = np.load('signs.npy')
 
-# Three videos worth of data
-no_sequences = 1
+model = Sequential()
+model.add(LSTM(64, return_sequences=True,
+          activation='relu', input_shape=(15, 1662)))
+model.add(LSTM(128, return_sequences=True, activation='relu'))
+model.add(LSTM(64, return_sequences=False, activation='relu'))
+model.add(Dense(64, activation='relu'))
+model.add(Dense(32, activation='relu'))
+model.add(Dense(actions.shape[0], activation='softmax'))
 
-# Videos are going to be 30 frames in length
-sequence_length = 30
-
-# Folder start
-start_folder = 1
-
-log_dir = os.path.join('Logs')
-tb_callback = TensorBoard(log_dir=log_dir)
-
+model.load_weights('sign_model.h5')
 
 def mediapipe_detection(image, model):
     # COLOR CONVERSION BGR 2 RGB
@@ -78,44 +71,27 @@ def draw_styled_landmarks(image, results):
 
 
 def extract_keypoints(results):
-    pose = np.array([[res.x, res.y, res.z, res.visibility] for res in results.pose_landmarks.landmark]).flatten(
-    ) if results.pose_landmarks else np.zeros(33*4)
+    pose = np.array([[res.x, res.y, res.z, res.visibility] for res in results.pose_landmarks.landmark]).flatten() if results.pose_landmarks else np.zeros(33*4)
     face = np.array([[res.x, res.y, res.z] for res in results.face_landmarks.landmark]).flatten(
     ) if results.face_landmarks else np.zeros(468*3)
     lh = np.array([[res.x, res.y, res.z] for res in results.left_hand_landmarks.landmark]).flatten(
     ) if results.left_hand_landmarks else np.zeros(21*3)
     rh = np.array([[res.x, res.y, res.z] for res in results.right_hand_landmarks.landmark]).flatten(
     ) if results.right_hand_landmarks else np.zeros(21*3)
-    return np.concatenate([pose, face, lh, rh])
 
+    all_non_zero = np.count_nonzero(pose) != 0 and np.count_nonzero(face) != 0 and np.count_nonzero(rh) != 0
 
-model = Sequential()
-model.add(LSTM(64, return_sequences=True,
-          activation='relu', input_shape=(30, 1662)))
-model.add(LSTM(128, return_sequences=True, activation='relu'))
-model.add(LSTM(64, return_sequences=False, activation='relu'))
-model.add(Dense(64, activation='relu'))
-model.add(Dense(32, activation='relu'))
-model.add(Dense(actions.shape[0], activation='softmax'))
+    # all_non_zero = np.count_nonzero(face) != 0 
 
-model.load_weights('action.h5')
+    return np.concatenate([pose, face, lh, rh]), all_non_zero
 
-# colors = [(245, 117, 16), (117, 245, 16), (16, 117, 245)]
-
-
-# def prob_viz(res, actions, input_frame, colors):
-#     output_frame = input_frame.copy()
-#     for num, prob in enumerate(res):
-#         cv2.rectangle(output_frame, (0, 60+num*40),
-#                       (int(prob*100), 90+num*40), colors[num], -1)
-#         cv2.putText(output_frame, actions[num], (0, 85+num*40),
-#                     cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
-
-#     return output_frame
-
-
-
-
+async def check_process(process):
+    while True:
+        if process.poll() is not None:
+            print("UI is terminated. Exiting server.")
+            asyncio.get_event_loop().stop()
+            break
+        await asyncio.sleep(1)
 
 
 async def server(websocket, path):
@@ -124,10 +100,11 @@ async def server(websocket, path):
         sequence = []
         sentence = []
         predictions = []
-        threshold = 0.5
+        threshold = 0.7
         cap = cv2.VideoCapture(0)
+        data_len = 0
 
-        print('Function Called')
+        
 
         with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
             while cap.isOpened():
@@ -137,68 +114,61 @@ async def server(websocket, path):
 
                 # Make detections
                 image, results = mediapipe_detection(frame, holistic)
-                print(results)
 
                 # Draw landmarks
                 draw_styled_landmarks(image, results)
 
                 # 2. Prediction logic
-                keypoints = extract_keypoints(results)
-                sequence.append(keypoints)
-                sequence = sequence[-30:]
+                keypoints, all_non_zero = extract_keypoints(results)
 
-                if len(sequence) == 30:
-                    res = model.predict(np.expand_dims(sequence, axis=0))[0]
-                    print(actions[np.argmax(res)])
-                    predictions.append(np.argmax(res))
+                if all_non_zero:
+                    sequence.append(keypoints)
+                    sequence = sequence[-15:]
 
-                # 3. Viz logic
-                    if np.unique(predictions[-10:])[0] == np.argmax(res):
-                        if res[np.argmax(res)] > threshold:
+                    if len(sequence) == 15:
+                        res = model.predict(np.expand_dims(sequence, axis=0))[0]
+                        predictions.append(np.argmax(res))
 
-                            if len(sentence) > 0:
-                                if actions[np.argmax(res)] != sentence[-1]:
+                        if np.unique(predictions[-10:])[0] == np.argmax(res):
+                            if res[np.argmax(res)] > threshold:
+                                if len(sentence) > 0:
+                                    if actions[np.argmax(res)] != sentence[-1]:
+                                        sentence.append(actions[np.argmax(res)])
+                                else:
                                     sentence.append(actions[np.argmax(res)])
-                            else:
-                                sentence.append(actions[np.argmax(res)])
 
-                    if len(sentence) > 5:
-                        sentence = sentence[-5:]
-
-                    # Viz probabilities
-                    # image = prob_viz(res, actions, image, colors)
-
-                # cv2.rectangle(image, (0, 0), (640, 40), (245, 117, 16), -1)
-                # cv2.putText(image, ' '.join(sentence), (3, 30),
-                #             cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
-
+                        if len(sentence) > 20:
+                            sentence = sentence[-20:]
 
                 encoded = cv2.imencode('.jpg', image)[1]
-
-                data = str(base64.b64encode(encoded))
-                data = f"{data[2:len(data)-1]}|{sentence}"
-                # data = data[2:len(data)-1]
-                print("data sent")
+                data = str(base64.b64encode(encoded)) # encode the image
+                text = ' '.join(sentence)
+                data = f"{data[2:len(data)-1]}|{text}" # data to send
+                data_len+=1
+                print(f"\rData sent {data_len}",end='')
                 await websocket.send(data)
-            
-
-            # cv2.imshow("Transimission", frame)
-
-            # if cv2.waitKey(1) & 0xFF == ord('q'):
-            #     break
             cap.release()
     except websockets.ConnectionClosed:
-        print("Client Disconnected !")
+        print("\nClient Disconnected !")
         cap.release()
-        asyncio.get_event_loop().stop()
-    finally:
-        pass
-    # except:st
-    #     print("Someting went Wrong !")
 
+    finally:
+        if process.poll() is not None:
+            print("Exiting Server")
+            try:
+                os.kill(os.getpid(), signal.SIGTERM)
+            except Exception as e:
+                print("Error in auto exiting the server")
+
+process = subprocess.Popen(['SignBridge.exe'])
 start_server = websockets.serve(server, port=port)
 print("Started server on port : ", port)
-asyncio.get_event_loop().run_until_complete(start_server)
-asyncio.get_event_loop().run_forever()
+
+event_loop = asyncio.get_event_loop()
+event_loop.run_until_complete(start_server)
+event_loop.create_task(check_process(process))  # start the check_process task
+event_loop.run_forever()
 
 
+if __name__ == '__main__':
+    main()
