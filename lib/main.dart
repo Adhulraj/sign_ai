@@ -242,7 +242,7 @@ void showInfo(BuildContext context) {
                   120, 96, 191, 235),
               borderRadius: BorderRadius.all(Radius.circular(12))), // Adjust this value as needed
           child: const Markdown(data: '''
-## The project report is submitted in fulfillment of the requirement for the Bachelor of Computer Science (BSc CS), Calicut University.
+###### The project is submitted in fulfillment of the requirement for the Bachelor of Computer Science (BSc CS), Calicut University.
 
 
 
